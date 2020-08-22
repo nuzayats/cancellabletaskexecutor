@@ -23,7 +23,7 @@ public class CancellableTaskExecutor {
         private final ScheduledFuture<?> future;
         private final CancellableRunnable runnable;
 
-        Execution(ScheduledFuture<?> future, CancellableRunnable runnable) {
+        private Execution(ScheduledFuture<?> future, CancellableRunnable runnable) {
             this.future = future;
             this.runnable = runnable;
         }
