@@ -29,8 +29,8 @@ public class CancellableTaskExecutor {
         }
 
         /**
-         * @return return true when it is cancelled
-         * and it's guaranteed that the task won't get executed. otherwise false
+         * @return true when it is cancelled and it's guaranteed that the task won't get executed.
+         * otherwise false
          */
         public boolean cancel() {
             return future.cancel(false) && runnable.cancel();
