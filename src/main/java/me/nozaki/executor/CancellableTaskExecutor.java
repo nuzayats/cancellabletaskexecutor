@@ -3,6 +3,7 @@ package me.nozaki.executor;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,8 +63,7 @@ public class CancellableTaskExecutor {
 
     private class CancellableRunnable implements Runnable {
 
-        private final Object lock = new Object();
-        private boolean cancelledOrStarted;
+        private final AtomicBoolean cancelledOrStarted = new AtomicBoolean();
         private final Runnable task;
 
         private CancellableRunnable(Runnable task) {
@@ -72,12 +72,9 @@ public class CancellableTaskExecutor {
 
         @Override
         public void run() {
-            synchronized (lock) {
-                if (cancelledOrStarted) {
-                    // cancelled, forget about the task
-                    return;
-                }
-                cancelledOrStarted = true;
+            if (!cancelledOrStarted.compareAndSet(false, true)) {
+                return;
+                // cancelled, forget about the task
             }
             try {
                 task.run();
@@ -87,14 +84,7 @@ public class CancellableTaskExecutor {
         }
 
         boolean cancel() {
-            synchronized (lock) {
-                if (cancelledOrStarted) {
-                    // the task is already started or cancelled, failed to cancel
-                    return false;
-                }
-                cancelledOrStarted = true;
-            }
-            return true;
+            return cancelledOrStarted.compareAndSet(false, true);
         }
     }
 }
