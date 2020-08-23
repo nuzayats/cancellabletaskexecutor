@@ -73,8 +73,7 @@ public class CancellableTaskExecutor {
         @Override
         public void run() {
             if (!cancelledOrStarted.compareAndSet(false, true)) {
-                return;
-                // cancelled, forget about the task
+                return; // cancelled, forget about the task
             }
             try {
                 task.run();
